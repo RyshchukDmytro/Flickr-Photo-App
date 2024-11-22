@@ -5,14 +5,18 @@
 //  Created by Dmytro Ryshchuk on 11/21/24.
 //
 
-import Foundation
+import SwiftUI
 import Combine
 import SwiftSoup
+import Photos
 
 class PhotoViewModel: ObservableObject {
     @Published var photos: [PhotoModel] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    
+    @State private var showSaveAlert = false
+    @State private var saveError: Error? = nil
     
     private let service = FlickrService()
     
@@ -68,5 +72,30 @@ class PhotoViewModel: ObservableObject {
             }
         }
         return text
+    }
+    
+    func savePhoto(from path: String) {
+        guard let url = URL(string: path) else { return }
+        downloadImage(from: url) { [weak self] image in
+            guard let image = image else {
+                self?.saveError = NSError(domain: "SaveError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to download image"])
+                self?.showSaveAlert = true
+                return
+            }
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            self?.saveError = nil
+            self?.showSaveAlert = true
+        }
+    }
+    
+    func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+            if let data = data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }
+        task.resume()
     }
 }

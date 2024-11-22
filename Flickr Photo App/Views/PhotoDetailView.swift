@@ -26,10 +26,23 @@ struct PhotoDetailView: View {
             Text("Description: \(viewModel.extractDescription(from: photo.description))")
             Text("Author: \(viewModel.extractAuthor(from: photo.author))")
             Text("Published: \(viewModel.formattedDate(from: photo.published))")
-            
-            Spacer()
+        }
+        
+        HStack(alignment: .center) {
+            Button(action: {
+                viewModel.savePhoto(from: photo.media.m)
+            }) {
+                Text("Save Photo")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            }
         }
         .padding()
         .navigationTitle("Photo Details")
+        
+        Spacer()
     }
 }
