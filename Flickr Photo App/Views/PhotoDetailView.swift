@@ -23,8 +23,8 @@ struct PhotoDetailView: View {
             
             Text(photo.title)
                 .font(.headline)
-            Text(photo.description)
-            Text("Author: \(photo.author)")
+            Text("Description: \(viewModel.extractDescription(from: photo.description))")
+            Text("Author: \(viewModel.extractAuthor(from: photo.author))")
             Text("Published: \(viewModel.formattedDate(from: photo.published))")
             
             Spacer()

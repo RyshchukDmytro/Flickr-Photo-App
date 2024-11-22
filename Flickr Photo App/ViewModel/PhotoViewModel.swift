@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftSoup
 
 class PhotoViewModel: ObservableObject {
     @Published var photos: [PhotoModel] = []
@@ -41,5 +42,31 @@ class PhotoViewModel: ObservableObject {
         let outputFormatter = DateFormatter()
         outputFormatter.dateStyle = .medium
         return outputFormatter.string(from: date)
+    }
+    
+    // to make description user friendly
+    func extractDescription(from htmlString: String) -> String {
+        let noDescriptionText = "No description available."
+        do {
+            // Use SwiftSoup framework to parse readable text from description
+            let document = try SwiftSoup.parse(htmlString)
+            let paragraphs = try document.select("p")
+            let text = try paragraphs.last()?.text() ?? ""
+            return !text.isEmpty ? text : noDescriptionText
+        } catch {
+            print("Error parsing HTML: \(error.localizedDescription)")
+            return noDescriptionText
+        }
+    }
+    
+    // to make author user friendly
+    func extractAuthor(from text: String) -> String {
+        if text.contains("nobody@flickr.com") {
+            if let start = text.range(of: "(\"")?.upperBound,
+               let end = text.range(of: "\")", range: start..<text.endIndex)?.lowerBound {
+                return String(text[start..<end])
+            }
+        }
+        return text
     }
 }
