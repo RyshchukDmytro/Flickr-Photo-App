@@ -1,4 +1,4 @@
-There a lot of things that I could add, but 3 hours is not a very big amount of time.
+There are a lot of things I could have added, but 3 hours isn’t a lot of time (I spent about 2.5 hours).
 For example:
 - pagination + caching
 - coredata to store images
